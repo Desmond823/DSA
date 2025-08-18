@@ -29,13 +29,13 @@ int main(){
 bool findElem(charList L, char A){ // constraint: one return statement only
     int i;
     for(i = 0; L.elem[i] != A && i < L.count; i++){} // i records the position and will end early if character is found
-    return (L.elem[i] == A)? true : false; // ternary return statement (kinda cool lowk)
+    return (i < L.count)? true : false; // ternary return statement (kinda cool lowk)
 }
 
 void deleteElem(charList* L, char A){ // constraint: no return, no break or continue statements
     int i, j;
     for(i = 0; L->elem[i] != A && i < L->count; i++){} // first loop is to determine if A exists in L->elem
-    if(L->elem[i] == A){ // if it exists it will run the code inside
+    if(i < L->count){ // if it exists it will run the code inside
         for(j = i; j < L->count; L->elem[j] = L->elem[j+1], j++){}
         L->count--;
     }
