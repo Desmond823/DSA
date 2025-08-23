@@ -7,6 +7,7 @@ typedef struct node {
     struct node *link;
 }*charList; 
 
+void insertFirst(charList* ref, char x);
 void insertLast(charList* ref, char x);
 void printList(charList ref);
 
@@ -24,6 +25,8 @@ int main(){
     insertLast(&L,'x');
     insertLast(&L,'i');
     insertLast(&L,'c');
+    insertFirst(&L,'a');
+    insertFirst(&L,'b');
 
     printList(L);
 
@@ -43,6 +46,13 @@ int main(){
     deleteElem(&L, 'c'); // test for last position
     deleteElem(&L, 'b'); // test for elem that doesnt exist in the linked list
     printList(L);
+}
+
+void inserFirst(charList* ref, char elem){
+    charList temp = (charList) malloc(sizeof(struct node));
+    temp->elem = elem;
+    temp->link = *ref;
+    *ref = temp;
 }
 
 void insertLast(charList *ref, char elem) {
