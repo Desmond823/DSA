@@ -50,7 +50,8 @@ int allocSpace(VirtualHeap ref){
 
 void deallocSpace(VirtualHeap* ref, int index){
     if(index >= 0 && index < MAX){
-        
+        ref->Nodes[index].link = ref->avail; // link the deallocated node to the previous available node
+        ref->avail = index;                   // update the available index to the deallocated node
     }
 }
 
