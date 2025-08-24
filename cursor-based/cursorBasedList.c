@@ -22,8 +22,8 @@ int allocSpace(VirtualHeap ref);
 void deallocSpace(VirtualHeap* ref, int index);
 
 //utility functions
-void insertFirst(VirtualHeap* ref, List* L);
-void insertLast(VirtualHeap* ref, List L);
+void insertFirst(VirtualHeap* ref, List* L, char x);
+void insertLast(VirtualHeap* ref, List L, char x);
 void insertSorted(VirtualHeap* ref, List* L);
 void deleteElem(VirtualHeap* ref, List* L);
 
@@ -44,14 +44,27 @@ void initHeap(VirtualHeap* ref){
 
 int allocSpace(VirtualHeap ref){
     int i;
-    for(i = 0; ref.Nodes[i].link != -1 && i < MAX; i++){}   // exits on the first available node
-    return i;                                               // returns -1 if no available node
+    for(i = 0; ref.Nodes[i].elem != '\0' && i < MAX; i++){}   // exits on the first available node
+    return (i < 10) ? i: -1;                                               // returns -1 if no available node
 }
 
 void deallocSpace(VirtualHeap* ref, int index){
-    if(index >= 0 && index < MAX){
-        
+
+}
+
+void insertFirst(VirtualHeap* ref, List* L, char x){
+    ref->avail = allocSpace(*ref);
+    if(ref->avail != -1){
+        ref->Nodes[ref->avail].elem = x;
+        ref->Nodes[ref->avail].link = *L;
+        *L = ref->avail;
     }
 }
 
-
+void insertLast(VirtualHeap* ref, List L, char x){
+    ref->avail = allocSpace(*ref);
+    if(ref->avail != -1){
+        ref->Nodes[ref->avail].elem = x;
+        ref->Nodes[ref->avail].link = -1;
+    }
+}
