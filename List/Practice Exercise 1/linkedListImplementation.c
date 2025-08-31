@@ -48,7 +48,7 @@ int main(){
     printList(L);
 }
 
-void inserFirst(charList* ref, char elem){
+void insertFirst(charList* ref, char elem){
     charList temp = (charList) malloc(sizeof(struct node));
     temp->elem = elem;
     temp->link = *ref;
