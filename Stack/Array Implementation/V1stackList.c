@@ -22,6 +22,7 @@ bool isEmpty(Stack S); // returns true if empty, else false
 bool isFull(Stack S); // returns true if full, else false
 void Top(Stack S); // returns the top element
 void printStack(Stack* S); // prints and pops all elements
+void insertBottom(Stack* S, char x); // inserts at the 'beginning' of the list
 
 int main(){
     Stack S;
@@ -37,7 +38,7 @@ int main(){
     push(&S, 'G');
     push(&S, 'H');
     push(&S, 'I');
-    push(&S, 'J');
+    insertBottom(&S, 'J');
     (isFull(S)) ? printf("Stack is Full!\n") : printf("Stack is not Full!\n");
     push(&S, 'K');
 
@@ -86,5 +87,18 @@ void Top(Stack S){
 void printStack(Stack* S){
     for(; S->top != -1; pop(S)){
         printf("%c ", S->elem[S->top]);
+    }
+}
+
+void insertBottom(Stack* S, char x){
+    Stack temp;
+    initStack(&temp);
+    for(; S->top != -1; pop(S)){ // transfer everything to temp
+        push(&temp, S->elem[S->top]);
+    }
+    push(S, x); // insert new elem
+    for(; temp.top != -1; pop(&temp)){ // transfer everything from temp
+        printf("%d\n", temp.top);
+        push(S, temp.elem[temp.top]);
     }
 }
