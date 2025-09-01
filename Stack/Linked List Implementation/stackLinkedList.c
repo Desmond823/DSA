@@ -7,6 +7,7 @@ typedef struct node{
     struct node* link;
 }*Stack;
 
+
 // Stack ADT functions
 void initStack(Stack* S); // initializes top to -1
 void push(Stack* S, char x); // basically insertFirst for linked list
@@ -16,6 +17,7 @@ void pop(Stack* S); // deleteFirst for linked List
 bool isEmpty(Stack S); // returns true if empty, else false
 char Top(Stack S); // returns the top element
 void printStack(Stack* S); // prints and pops all elements
+void insertBottom(Stack* S, char x); // insert bottom using Stack ADT function
 
 int main(){
     Stack S;
@@ -25,9 +27,8 @@ int main(){
     push(&S, 'B');
     push(&S, 'C');
     push(&S, 'D');
-
+    insertBottom(&S, 'E');
     printf("Top: %c\n", Top(S));
-    pop(&S);
     printStack(&S);
     (isEmpty(S)) ? printf("\nStack is Empty!\n") : printf("\nStack is not Empty!\n");
 
@@ -50,6 +51,7 @@ void pop(Stack* S){
     if(*S != NULL){
         Stack temp = *S;
         *S = (*S)->link;
+        free(temp);
     }
 }
 
@@ -63,8 +65,19 @@ char Top(Stack S){
 
 void printStack(Stack* S){
     for(;*S != NULL; pop(S)){
-        printf("%c -> ", (*S)->elem);
+        printf("%c -> ", Top(*S));
     }
     Top(*S);
 }
 
+void insertBottom(Stack* S, char x){
+    Stack temp;
+    initStack(&temp);
+    for(;*S != NULL; pop(S)){ // transfer everything to temp
+        push(&temp, (*S)->elem);
+    }
+    push(S, x);
+    for(; temp != NULL; pop(&temp)){ // transfer everything back to S
+        push(S, Top(temp));
+    }
+}

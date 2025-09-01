@@ -90,7 +90,7 @@ void printStack(Stack* S){
     }
 }
 
-void insertBottom(Stack* S, char x){
+void insertBottom(Stack* S, char x){ // insert bottom using Stack ADT functions
     Stack temp;
     initStack(&temp);
     for(; S->top != -1; pop(S)){ // transfer everything to temp
