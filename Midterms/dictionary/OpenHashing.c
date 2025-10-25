@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+
 #define MAX 10
 
 typedef int Set[MAX];
@@ -15,6 +17,9 @@ int hash(int data);
 void initDic(Dictionary D);
 void displayDic(Dictionary D);
 void insert(Dictionary D, int data);
+void delete(Dictionary D, int data);
+bool isMember(Dictionary D, int data);
+
 //void populateDic(Dictionary D, Set S); // use if needed
 
 int main(){
@@ -28,6 +33,13 @@ int main(){
     insert(D, 30);
     insert(D, 13);
     insert(D, 11);
+    displayDic(D);
+
+    printf("\nDoes 20 exist?: %d", isMember(D, 20));
+    printf("\nDoes 1 exist?: %d", isMember(D, 1));
+
+    printf("\nDeleting 11...\n");
+    delete(D, 11);
     displayDic(D);
 }
 
@@ -67,5 +79,30 @@ void insert(Dictionary D, int data){
         temp->link = *trav;
         *trav = temp; 
     }
+}
+
+void delete(Dictionary D, int data){
+    int group = hash(data);
+
+    NodeType* trav;
+
+    for(trav = &D[group]; *trav != NULL && (*trav)->elem != data; trav = &(*trav)->link){}
+    if(trav != NULL){
+        NodeType temp = *trav;
+        *trav = temp->link;
+        free(temp);
+    }
+    else{
+        printf("\nElement does not exist!");
+    }
+}
+
+bool isMember(Dictionary D, int data){
+    int group = hash(data);
+    NodeType check = D[group];
+
+    for(; check != NULL && check->elem != data; check = check->link){};
+
+    return (check != NULL) ? true : false;
 }
 
