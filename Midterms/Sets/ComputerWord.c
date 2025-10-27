@@ -18,13 +18,13 @@ int main(){
     showBitPattern(S);
     //displayElem(S);
 
-    insertElem(&S, 3);
-    insertElem(&S, 1);
-    insertElem(&S, 4);
+    // insertElem(&S, 3);
+     insertElem(&S, 1);
+    // insertElem(&S, 4);
 
-    deleteElem(&S, 5);
-    deleteElem(&S, 4);
-    deleteElem(&S, 1);
+    // deleteElem(&S, 5);
+    // deleteElem(&S, 4);
+    // deleteElem(&S, 1);
 
     showBitPattern(S);
     displayElem(S);
