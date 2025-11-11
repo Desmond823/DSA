@@ -10,6 +10,9 @@ void showBitPattern(Set S);
 void insertElem(Set* S, int elem);
 void deleteElem(Set* S, int elem);
 void displayElem(Set S);
+Set Union(Set A, Set B);
+Set Intersection(Set A, Set B);
+Set (Set A, Set B);
 
 int main(){
     Set S;
