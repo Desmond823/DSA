@@ -1,26 +1,27 @@
-// this is zeus' linear hashing, written in the way I understood it
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
 #define MAX 10
-#define EMPTY -1
-#define DELETED -2
+#define EMPTY -999
+#define DELETED -998
 
 
 typedef int Dictionary[MAX];
 
-void initDict(Dictionary D);
+void initDictionary (Dictionary D);
 int hash(int x);
 void insert(Dictionary D, int x);
 void delete(Dictionary D, int x);
 bool search(Dictionary D, int x);
-void printDict(Dictionary D);
+void print(Dictionary D);
 
 int main(){
     Dictionary D;
-    initDict(D);
 
+    initDictionary(D);
+
+    // populate till full
     insert(D, 1);
     insert(D, 2);
     insert(D, 3);
@@ -32,74 +33,79 @@ int main(){
     insert(D, 9);
     insert(D, 10);
 
-    insert(D, 15);
+    // test for full dictionary
+    insert(D, 11);
+    insert(D, 12);
 
-    delete(D, 10);
-    delete(D, 20);
-    insert(D, 20);
+    // test for existing elements
+    delete(D, 5);
+    delete(D, 6);
 
-    printf("%d %s the dictionary.\n", 8, search(D, 8) == true ? "is in" : "is not in");
-    printf("%d %s the dictionary.\n", 11, search(D, 11) == true ? "is in" : "is not in");
+    // test for nonexistent elements
+    delete(D, 14);
+    delete(D, 13);
 
-    printDict(D);
+    // replace deleted elements
+    insert(D, 11);
+    insert(D, 12);
+    
+    // search for existing and non existing element
+    printf("%d %s in the Dictionary.\n", 1, search(D,1) == true ? "is" : "is not");
+    printf("%d %s in the Dictionary.\n", 17, search(D,17) == true ? "is" : "is not");
+
+    print(D);
 }
 
-void initDict(Dictionary D){
-    for(int i = 0; i < MAX; i++){
+void initDictionary(Dictionary D){
+    for(int i = 0; i<MAX; i++){
         D[i] = EMPTY;
     }
 }
 
 int hash(int x){
-    return x % MAX;
+    return ((x % MAX) + MAX) % MAX;
 }
 
 void insert(Dictionary D, int x){
     int hashVal = hash(x);
-    int idx = hashVal; 
-    bool isFull = false;
+    int idx;
+    int stop = (x + MAX - 1) % MAX;
 
-    while(D[idx] != EMPTY && D[idx] != DELETED && isFull != true){ //if D[idx] is EMPTY or DELETED, loop breaks
-        idx = (idx+1) % MAX;
-        if(idx == hashVal) isFull = true; // if idx looped once, isFull becomes true and breaks the loop
+    for(idx = hashVal; idx != stop && D[idx] != EMPTY && D[idx] != DELETED; idx = (idx+1) % MAX){}
+    if(idx != stop){
+        D[idx] = x;
     }
-
-    if(isFull == true) printf("PUNO NA BAI!\n"); 
-    else D[idx] = x;
-    
+    else{
+        printf("Cannot insert %d, dictionary is full!\n", x);
+    }
 }
 
 void delete(Dictionary D, int x){
     int hashVal = hash(x);
-    int idx = hashVal;
-    bool looped = false;
-    
-    while(D[idx] != x && looped != true){ // stops if x has been found or idx looped once
-        idx = (idx+1) % MAX;
-        if(idx == hashVal) looped = true;
-    }
+    int idx;
+    int stop = (x + MAX - 1) % MAX;
 
-    if(D[idx] == x && looped == false){ 
+    for(idx = hashVal; idx != stop && D[idx] != x; idx = (idx+1) % MAX){}
+    if(idx != stop){
         D[idx] = DELETED;
-        printf("%d successfully deleted\n", x);
     }
-    else printf("%d does not exist.\n", x);
+    else{
+        printf("%d does not exist in the dictionary.\n", x);
+    }
 }
 
 bool search(Dictionary D, int x){
-    int hashVal = hash(x);
-    int idx = hashVal;
-    bool looped = false;
+        int hashVal = hash(x);
+    int idx;
+    int stop = (x + MAX - 1) % MAX;
 
-    while(D[idx] != x && looped != true){ // breaks if element is found or idx loops once
-        idx = (idx+1) % MAX;
-        if(idx == hashVal) looped = true;
-    }
-    return (looped == false) ? true : false; // returns true if elem is found
+    for(idx = hashVal; idx != stop && D[idx] != x; idx = (idx+1) % MAX){}
+    
+    return (idx != stop) ? true : false;
 }
 
-void printDict(Dictionary D){
-    for(int i = 0; i < MAX; i++){
+void print(Dictionary D){
+    for(int i = 0; i<MAX; i++){
         printf("[%d]: ", i);
         if(D[i] == EMPTY){
             printf("EMPTY\n");
@@ -110,6 +116,7 @@ void printDict(Dictionary D){
         else{
             printf("%d\n", D[i]);
         }
+        
     }
+    
 }
-

@@ -1,59 +1,72 @@
-// This implementation is similar to cursor-based
-// dont do the same mistake I did and use PPN for inserting heheheha
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-
 #define ARR_MAX 10
 #define HASH_MAX (ARR_MAX/2)
-#define EMPTY -1
-#define DELETED -2
+#define EMPTY -999
+#define DELETED -998
 
 typedef struct{
     int data;
     int link;
-}nodeType;
+}NodeType;
 
 typedef struct{
-    nodeType arr[ARR_MAX];
+    NodeType arr[ARR_MAX];
     int avail;
 }Dictionary;
 
-int hash(int x);
-void insertDictionary(Dictionary* D,int x);
-int deleteDictionary(Dictionary* D,int x);
-void printHashMap(Dictionary* D);
-
 void initDict(Dictionary* D);
+int hash(int x);
+void insert(Dictionary* D, int x);
+void delete(Dictionary* D, int x);
+bool search(Dictionary* D, int x);
+void print(Dictionary* D);
 
 int main(){
     Dictionary D;
-
     initDict(&D);
 
-    insertDictionary(&D, 1);
-    insertDictionary(&D, 2);
-    insertDictionary(&D, 3);
-    insertDictionary(&D, 4);
-    insertDictionary(&D, 5);
-    insertDictionary(&D, 6);
-    insertDictionary(&D, 7);
-    insertDictionary(&D, 8);
-    insertDictionary(&D, 9);
-    insertDictionary(&D, 11);
-    insertDictionary(&D, 16);
+    //populate my dict (heheheha)
+    insert(&D, 1);
+    insert(&D, 2);
+    insert(&D, 3);
+    insert(&D, 4);
+    insert(&D, 5);
+    insert(&D, 6);
+    insert(&D, 7);
+    insert(&D, 8);
+    insert(&D, 9);
+    insert(&D, 10);
 
-    deleteDictionary(&D, 2);
-    deleteDictionary(&D, 11);
-    insertDictionary(&D, 13);
+    // test for full dict
+    insert(&D, 11);
+    insert(&D, 12);
 
-    printHashMap(&D);
+    // test to delete element in main bucket
+    delete(&D, 1);
+    delete(&D, 2);
+
+    // test to delete element in synonym bucket
+    delete(&D, 10);
+    delete(&D, 7);
+
+    // replace deleted elements
+    insert(&D, 11);
+    insert(&D, 12);
+    insert(&D, 16);
+    insert(&D, 21);
+
+    // search for existing element and non existing element
+    printf("%d %s in the dictionary\n", 5, search(&D, 5) == true ? "is" : "is not");
+    printf("%d %s in the dictionary\n", 99, search(&D, 99) == true ? "is" : "is not");
+
+    print(&D);
+
 }
 
 void initDict(Dictionary* D){
-    for(int i = 0; i< ARR_MAX-1; i++){
-        if(i < HASH_MAX){
+    for(int i = 0; i<ARR_MAX-1; i++){
+        if(i<HASH_MAX){
             D->arr[i].data = EMPTY;
             D->arr[i].link = -1;
         }
@@ -66,14 +79,62 @@ void initDict(Dictionary* D){
 }
 
 int hash(int x){
-    return x % HASH_MAX;
+    return ((x % HASH_MAX) + HASH_MAX) % HASH_MAX;
 }
 
-void printHashMap(Dictionary* D){ 
+void insert(Dictionary* D, int x){
+    int hashVal = hash(x);
+    if(D->arr[hashVal].data == EMPTY || D->arr[hashVal].data == DELETED){
+        D->arr[hashVal].data = x;
+    }
+    else{
+        int idx;
+        for(idx = hashVal; D->arr[idx].link != -1; idx = D->arr[idx].link){}
+        if(D->arr[idx].link == -1){
+            int temp = D->avail;
+            if(temp != -1){
+                D->avail = D->arr[temp].link;
+                D->arr[temp].data = x;
+                D->arr[temp].link = -1;
+                D->arr[idx].link = temp;
+            }
+            else printf("Cannot insert %d, dictionary is full :(\n", x);
+        }
+    }
+}
+
+void delete(Dictionary* D, int x){
+    int hashVal = hash(x);
+    if(D->arr[hashVal].data == x){
+        D->arr[hashVal].data = DELETED;
+    }
+    else{
+        int idx, temp;
+        for(idx = hashVal; idx != -1 && D->arr[idx].data != x; idx = D->arr[idx].link){}
+        if(idx != -1){
+            for(temp = hashVal; D->arr[temp].link != idx; temp = D->arr[temp].link){} // unlink from previous node
+            D->arr[temp].link = -1;
+            D->arr[idx].link = D->avail;
+            D->avail = idx;
+        }
+        else printf("%d does not exist in the dictionary\n", idx);
+    }
+}
+
+bool search(Dictionary* D, int x){
+    int hashVal = hash(x);
+    int idx;
+    for(idx = hashVal; idx != -1 && D->arr[idx].data != x; idx = D->arr[idx].link){}
+    return (idx != -1) ? true : false;
+}
+
+void print(Dictionary* D){
     for(int i = 0; i<HASH_MAX; i++){
-        printf("Hash value %d: ", i);
+        printf("[%d]: ", i);
         for(int j = i; j != -1; j = D->arr[j].link){
-            D->arr[j].data != DELETED ? printf("%d ", D->arr[j].data) : printf("DELETED ");
+            if(D->arr[j].data == EMPTY) printf("EMPTY ");
+            if(D->arr[j].data == DELETED) printf("DELETED ");
+            else printf("%d ", D->arr[j].data);
             if(D->arr[j].link != -1){
                 printf("-> ");
             }
@@ -82,42 +143,3 @@ void printHashMap(Dictionary* D){
     }
 }
 
-void insertDictionary(Dictionary* D,int x){ 
-    int trav;
-    int hashVal = hash(x);
-    
-    if(D->arr[hashVal].data == EMPTY || D->arr[hashVal].data == DELETED){
-        D->arr[hashVal].data = x;
-    }
-    else{
-        for(trav = hashVal; D->arr[trav].link != -1; trav = D->arr[trav].link){} //travel to the end of the link of that hashVal index
-        int temp = D->avail; // allocSpace
-        if(temp != -1){
-            D->avail = D->arr[temp].link;
-            D->arr[temp].data = x;
-            D->arr[temp].link = -1;
-            D->arr[trav].link = temp;
-        }
-        else{
-            printf("Cant insert %d! Dictionary is full!\n", x);
-        }
-    }
-}
-
-int deleteDictionary(Dictionary* D,int x){
-    int hashVal= hash(x);
-    int trav;
-    for(trav = hashVal; trav != -1 && D->arr[trav].data != x; trav = D->arr[trav].link){}
-    
-    if(trav < HASH_MAX) D->arr[trav].data = DELETED;
-    else if(trav>=HASH_MAX){
-        D->arr[trav].data = DELETED;
-        D->arr[trav].link = D->avail;
-        int temp = trav;
-        D->avail = trav;
-        
-        for(trav = hashVal; D->arr[trav].link != temp; trav = D->arr[trav].link){}
-        D->arr[trav].link = -1;
-    }
-    else printf("%d does not exist!\n", x);
-}
