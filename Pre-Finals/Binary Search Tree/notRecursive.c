@@ -22,9 +22,9 @@ void infixPrint(BST T);
 int main(){
     int setA[7] = {10,5,14,12,7,18,15}; // sample data
     BST root;
-    initBST(&root);
+    initBST(&root); //initialize root
 
-    for(int i = 0; i<7; i++){
+    for(int i = 0; i<7; i++){ //store setA into the BST
         insert(&root, setA[i]);
     }
 
@@ -80,40 +80,44 @@ void insert(BST* T, int data){
 }
 
 void delete(BST* T, int data){
-    BST* trav = T;
-    BST temp;
-
-    while(*trav != NULL && (*trav)->data != data){ // travel to null and check if unique
-        if(data < (*trav)->data) trav = &(*trav)->LC;// if data is smaller
-        else if(data > (*trav)->data) trav = &(*trav)->RC; // if data is larger
+    if(*T == NULL){
+        printf("this tree empty bru\n");
     }
-    if(*trav != NULL){ // if data has been found
-        temp = *trav;
-        if(temp->LC != NULL && temp->RC == NULL) *trav = temp->LC; // if node has left child only
-        else if(temp->RC != NULL && temp->LC == NULL) *trav = temp->RC; // if node has right child only
-        else if(temp->RC == NULL && temp->LC == NULL) *trav = NULL;
-        else{ // if node has 2 child nodes
-            trav = &(*trav)->RC; // search for immediate successor (option 1)
-            while((*trav)->LC != NULL){
-                trav = &(*trav)->LC;
-            }
+    else{
+        BST* trav = T;
+        BST temp;
 
-            // search for preceeding succesor (option 2)
-            /*
-            trav = &(*trav)->LC;
-            while((*trav)->RC != NULL){
-                *trav = &(*trav)->RC;
-            }
-            (*trav)->data = temp->data;
-            */
-
-           temp->data = (*trav)->data; // replace node val to preceeding/immediate succesor
-           *trav = NULL; // unlink the preceeding/immediate successor
-           temp = *trav; // assign temp to the preceeding/immediate successor node
+        while(*trav != NULL && (*trav)->data != data){ // travel to null and check if unique
+            if(data < (*trav)->data) trav = &(*trav)->LC;// if data is smaller
+            else if(data > (*trav)->data) trav = &(*trav)->RC; // if data is larger
         }
-        free(temp); // delete
+        if(*trav != NULL){ // if data has been found
+            temp = *trav;
+            if(temp->LC != NULL && temp->RC == NULL) *trav = temp->LC; // if node has left child only
+            else if(temp->RC != NULL && temp->LC == NULL) *trav = temp->RC; // if node has right child only
+            else if(temp->RC == NULL && temp->LC == NULL) *trav = NULL;
+            else{ // if node has 2 child nodes
+                // search for immediate successor (option 1)
+                trav = &(*trav)->RC;
+                while((*trav)->LC != NULL){
+                    trav = &(*trav)->LC;
+                }
 
-        
+                // search for preceeding succesor (option 2)
+                /*
+                trav = &(*trav)->LC;
+                while((*trav)->RC != NULL){
+                    *trav = &(*trav)->RC;
+                }
+                (*trav)->data = temp->data;
+                */
+
+            temp->data = (*trav)->data; // replace node val to preceeding/immediate succesor
+            *trav = NULL; // unlink the preceeding/immediate successor
+            temp = *trav; // assign temp to the preceeding/immediate successor node
+            }
+            free(temp); // delete
+        }
     }
 }
 
@@ -126,15 +130,18 @@ int member(BST T, int data){
 }
 
 int min(BST T){
-    while(T->LC != NULL){ // travel to null and check if unique
-        T = T->LC;// if data is smaller
+    if(T == NULL) printf("this tree empty cuh\n");
+    else{
+        while(T->LC != NULL){ // travel to the left most node
+            T = T->LC;
+        }
+        return T->data;
     }
-    return T->data;
 }
 
 int max(BST T){
-    while(T->RC != NULL){ // travel to null and check if unique
-        T = T->RC;// if data is smaller
+    while(T->RC != NULL){ // travel to the right most node
+        T = T->RC;
     }
     return T->data;
 }
