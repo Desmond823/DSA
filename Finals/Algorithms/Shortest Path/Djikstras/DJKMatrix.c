@@ -56,6 +56,24 @@ void displayMatrix(AdjMatrix M){
     }
 }
 
+/*
+    Pseudocode for dijkstraNIGGA (GLITCH IN THE MATRIX EDITION)
+    1. Initialize an dynamically allocated array with MAX (macro) size
+        1a. Set all values in retArr to M[origin][i] using a loop
+        1b. Set the origin index to 0
+    2. Initialize an array called set with MAX size
+        2a. Set values in all indexes to 0 in the set Array
+        2b. Set the origin to 1 with set[origin]
+    3. Declare for loop, i < MAX
+        3a.1 First Inner For Loop: Search for index with smallest value that is in V-S (Elements in V not in S, V in this case is retArr)
+        3a.2 Record index and flip its index in set to 1
+        3b.1 Second Inner For Loop: Calculate new distance by using trav->label as destination index
+        3b.2 newWeight = retArr[minIndex] + trav->weight
+        3b.3 Compare newWeight with retArr[trav->label]
+        3b.4 if smaller, replace retArr[trav->label] value to newWeight
+    4. Return retArr
+*/
+
 int* djikstra(AdjMatrix M, int origin){
     int* retArr = (int*)malloc(sizeof(int)*MAX);
 

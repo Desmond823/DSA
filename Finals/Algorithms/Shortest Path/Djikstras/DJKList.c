@@ -81,7 +81,8 @@ void displayList(AdjList L){
         1a. Set all values in retArr to INF
         1b. Set the origin index to 0
     2. Initialize an array called set with MAX size
-        2a. Set values in all indexes to 0 in the set Array
+        2a. Set values in all indexes to 0 in the set Array2
+        2b. Declare origin index in set array to 1
     3. Declare for loop, i < MAX
         3a.1 First Inner For Loop: Search for index with smallest value that is in V-S (Elements in V not in S, V in this case is retArr)
         3a.2 Record index and flip its index in set to 1
@@ -90,8 +91,6 @@ void displayList(AdjList L){
         3b.3 Compare newWeight with retArr[trav->label]
         3b.4 if smaller, replace retArr[trav->label] value to newWeight
     4. Return retArr
-
-
 */
 
 int* dijkstras(AdjList L, int origin){
