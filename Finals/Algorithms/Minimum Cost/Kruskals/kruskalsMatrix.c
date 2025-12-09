@@ -16,7 +16,7 @@ typedef struct{
 
 typedef int adjMatrix[MAX][MAX];
 
-MCT prims(adjMatrix M, int start);
+MCT kruskals(adjMatrix M);
 void displayEdgeList(edgeType edges[], int size);
 
 void initMatrix(adjMatrix M);
@@ -48,39 +48,41 @@ int main(){
     displayMatrix(M);
     displayEdges(M);
 
-    MCT primmie = prims(M,0);
-    displayEdgeList(primmie.edges, primmie.edgeCount);
+    MCT krusified = kruskals(M);
+    displayEdgeList(krusified.edges, krusified.edgeCount);
 }
 
-    MCT prims(adjMatrix M, int start){
-        MCT retTree = {.edgeCount = 0, .totalWeight = 0}; // return variable
-        int visited[MAX]; //bit-vector set for visited nodes
+MCT kruskals(adjMatrix M){
+    adjMatrix copy;
+    MCT retTree = {.edgeCount = 0, .totalWeight = 0};
+    
+    for(int i = 0; i<MAX; i++){
+        for(int j = 0; j<MAX; j++){
+            copy[i][j] = M[i][j];
+        }
+    }
 
-        for(int i = 0; i<MAX; i++) visited[i] = 0; // initialize everything to 0 (bit-vector)
-        visited[start] = 1; // set source node to 1
+    while(retTree.edgeCount != MAX-1){
+        edgeType minEdge = {.weight = INF};
 
-        while(retTree.edgeCount != MAX-1){
-            edgeType minEdge = {.weight = INF}; // initialize a variable to place in edge list
-
-            for(int i = 0; i<MAX; i++){
-                if(visited[i] == 1){ // if node is a visited node, check for its adjacent pairs
-                    for(int j = 0; j<MAX; j++){
-                        if(visited[j] == 0 && M[i][j] < minEdge.weight){ // if node is unvisited and is cheap af
-                            edgeType temp = {i, j, M[i][j]}; // declare temp for easy initialization
-                            minEdge = temp;
-                        }
-                    }
+        for(int i = 0; i<MAX; i++){ // check for every value in adjMatrix
+            for(int j = 0; j<MAX; j++){
+                if(copy[i][j] < minEdge.weight){ // just record the edge with smallest weight
+                    edgeType temp = {i,j,copy[i][j]};
+                    minEdge = temp;
                 }
             }
-
-            if(minEdge.weight != INF){ // if weight is INF, then that edge doesnt exist,,, im just adding it for overthniking purposes whwahah
-                retTree.edges[retTree.edgeCount++] = minEdge;
-                retTree.totalWeight += minEdge.weight;
-                visited[minEdge.destination] = 1; // set the destination node to 1
-            }
         }
-        return retTree;
+
+        if(minEdge.weight != INF){
+            retTree.edges[retTree.edgeCount++] = minEdge;
+            retTree.totalWeight += minEdge.weight;
+            copy[minEdge.source][minEdge.destination] = INF; // erase edge from adjMatrix to prevent redundancy
+            copy[minEdge.destination][minEdge.source] = INF; // erase both ways bra
+        }
     }
+    return retTree;
+}
 
 void initMatrix(adjMatrix M){
     for(int i = 0; i<MAX; i++){
@@ -116,8 +118,11 @@ void displayEdges(adjMatrix M){
 }
 
 void displayEdgeList(edgeType edges[], int size){
-    printf("\n After Prims: ");
+    printf("\nAfter Prims: ");
+    int totalWeight = 0;
     for(int i = 0; i<size; i++){
         printf("(%d, %d, %d) ", edges[i].source, edges[i].destination, edges[i].weight);
+        totalWeight += edges[i].weight;
     }
+    printf("\nTotal Weight: %d\n", totalWeight);
 }
